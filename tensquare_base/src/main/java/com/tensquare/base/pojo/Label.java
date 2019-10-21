@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "tb_lable")
-public class Lable implements Serializable {
+public class Label implements Serializable {
     @Id
     private String id;//
     private String labelname;//标签名称
