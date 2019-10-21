@@ -19,8 +19,8 @@ public class LabelController {
     }
 
     @RequestMapping(value = "/{labelId}",method = RequestMethod.GET)
-    private Result findById(@PathVariable String id){
-        return new Result(true,20000,"查询成功", labelService.findById(id));
+    private Result findById(@PathVariable String labelId){
+        return new Result(true,20000,"查询成功", labelService.findById(labelId));
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -30,15 +30,15 @@ public class LabelController {
     }
 
     @RequestMapping(value = "/{labelId}",method = RequestMethod.PUT)
-    private Result updata(@PathVariable String id,@RequestBody Label label){
-        label.setId(id);
+    private Result updata(@PathVariable String labelId,@RequestBody Label label){
+        label.setId(labelId);
         labelService.update(label);
         return new Result(true,20000,"修改成功");
     }
 
     @RequestMapping(value = "/{labelId}",method = RequestMethod.DELETE)
-    private Result deleteById(@PathVariable String id){
-        labelService.deleteById(id);
+    private Result deleteById(@PathVariable String labelId){
+        labelService.deleteById(labelId);
         return new Result(true,20000,"删除成功");
     }
 }

@@ -6,7 +6,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "tb_lable")
+@Table(name = "tb_label")
 public class Label implements Serializable {
     @Id
     private String id;//
