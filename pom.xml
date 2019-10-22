@@ -11,6 +11,12 @@
     <name>tensquare_parent</name>
     <description>tensquare Demo</description>
 
+    <modules>
+        <module>tensquare_common</module>
+        <module>tensquare_base</module>
+        <module>tensquare_recruit</module>
+    </modules>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
