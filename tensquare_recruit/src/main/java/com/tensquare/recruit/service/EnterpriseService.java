@@ -62,7 +62,7 @@ public class EnterpriseService {
 	/**
 	 * 条件查询
 	 * @param whereMap 查询条件
-	 * @return
+	 * @return 查询结果
 	 */
 	public List<Enterprise> findSearch(Map whereMap) {
 		Specification<Enterprise> specification = createSpecification(whereMap);
