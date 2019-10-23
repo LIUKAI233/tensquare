@@ -31,6 +31,22 @@ public class RecruitService {
 	private IdWorker idWorker;
 
 	/**
+	 * 查询推荐职位
+	 * @return 查询结果
+	 */
+	public List<Recruit> recommend(){
+		return recruitDao.findTop6ByStateOrderByCreatetimeDesc("2");
+	}
+
+	/**
+	 * 查询最新的职位
+	 * @return 查询结果
+	 */
+	public List<Recruit> newlist(){
+		return recruitDao.findTop6ByStateNotOrderByCreatetimeDesc("0");
+	}
+
+	/**
 	 * 查询全部列表
 	 * @return 查询结果
 	 */

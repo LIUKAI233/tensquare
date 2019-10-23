@@ -21,7 +21,24 @@ public class RecruitController {
 
 	@Autowired
 	private RecruitService recruitService;
-	
+
+	/**
+	 * 查询最新的职位
+	 * @return 查询结果
+	 */
+	@RequestMapping(value = "/search/newlist",method = RequestMethod.GET)
+	public Result newlist(){
+		return new Result(true,StatusCode.OK,"查询成功",recruitService.newlist());
+	}
+
+	/**
+	 * 查询推荐职位
+	 * @return 查询结果
+	 */
+	@RequestMapping(value = "/search/recommend",method = RequestMethod.GET)
+	public Result recommend(){
+		return new Result(true,StatusCode.OK,"查询成功",recruitService.recommend());
+	}
 	
 	/**
 	 * 查询全部数据

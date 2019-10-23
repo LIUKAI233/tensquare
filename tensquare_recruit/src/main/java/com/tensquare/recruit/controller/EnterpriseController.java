@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 /**
  * 控制器层
@@ -21,11 +22,20 @@ public class EnterpriseController {
 
 	@Autowired
 	private EnterpriseService enterpriseService;
-	
+
+	/**
+	 * 查询热门企业
+	 * @return 处理结果
+	 */
+	@RequestMapping(value = "/search/hotlist",method = RequestMethod.GET)
+	public Result hotlist(){
+		List<Enterprise> list = enterpriseService.findByIshot();
+		return new Result(true,StatusCode.OK,"查询成功",list);
+	}
 	
 	/**
 	 * 查询全部数据
-	 * @return
+	 * @return 处理结果
 	 */
 	@RequestMapping(method= RequestMethod.GET)
 	public Result findAll(){
@@ -35,7 +45,7 @@ public class EnterpriseController {
 	/**
 	 * 根据ID查询
 	 * @param id ID
-	 * @return
+	 * @return 处理结果
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.GET)
 	public Result findById(@PathVariable String id){
@@ -58,8 +68,8 @@ public class EnterpriseController {
 
 	/**
      * 根据条件查询
-     * @param searchMap
-     * @return
+     * @param searchMap 查询条件
+     * @return 处理结果
      */
     @RequestMapping(value="/search",method = RequestMethod.POST)
     public Result findSearch( @RequestBody Map searchMap){
@@ -68,7 +78,7 @@ public class EnterpriseController {
 	
 	/**
 	 * 增加
-	 * @param enterprise
+	 * @param enterprise 增加信息
 	 */
 	@RequestMapping(method=RequestMethod.POST)
 	public Result add(@RequestBody Enterprise enterprise  ){
@@ -78,7 +88,7 @@ public class EnterpriseController {
 	
 	/**
 	 * 修改
-	 * @param enterprise
+	 * @param enterprise 修改信息
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.PUT)
 	public Result update(@RequestBody Enterprise enterprise, @PathVariable String id ){
@@ -89,7 +99,7 @@ public class EnterpriseController {
 	
 	/**
 	 * 删除
-	 * @param id
+	 * @param id ID
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.DELETE)
 	public Result delete(@PathVariable String id ){

@@ -32,6 +32,10 @@ public class EnterpriseService {
 	@Autowired
 	private IdWorker idWorker;
 
+	public List<Enterprise> findByIshot(){
+		return enterpriseDao.findByIshot("1");
+	}
+
 	/**
 	 * 查询全部列表
 	 * @return 查询结果
@@ -79,7 +83,7 @@ public class EnterpriseService {
 	 * @param enterprise 增加的信息
 	 */
 	public void add(Enterprise enterprise) {
-		enterprise.setId( idWorker.nextId()+"" );
+		enterprise.setId(idWorker.nextId()+"");
 		enterpriseDao.save(enterprise);
 	}
 
@@ -107,7 +111,6 @@ public class EnterpriseService {
 	private Specification<Enterprise> createSpecification(Map searchMap) {
 
 		return new Specification<Enterprise>() {
-
 			@Override
 			public Predicate toPredicate(Root<Enterprise> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				List<Predicate> predicateList = new ArrayList<Predicate>();
