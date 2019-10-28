@@ -1,22 +1,14 @@
 package com.tensquare.gathering.controller;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.tensquare.gathering.pojo.Gathering;
 import com.tensquare.gathering.service.GatheringService;
-
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 /**
  * 控制器层
  * @author Administrator
@@ -33,7 +25,7 @@ public class GatheringController {
 	
 	/**
 	 * 查询全部数据
-	 * @return
+	 * @return 查询结果
 	 */
 	@RequestMapping(method= RequestMethod.GET)
 	public Result findAll(){
@@ -43,7 +35,7 @@ public class GatheringController {
 	/**
 	 * 根据ID查询
 	 * @param id ID
-	 * @return
+	 * @return 查询结果
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.GET)
 	public Result findById(@PathVariable String id){
@@ -66,8 +58,8 @@ public class GatheringController {
 
 	/**
      * 根据条件查询
-     * @param searchMap
-     * @return
+     * @param searchMap 查询条件
+     * @return 查询结果
      */
     @RequestMapping(value="/search",method = RequestMethod.POST)
     public Result findSearch( @RequestBody Map searchMap){
@@ -76,7 +68,7 @@ public class GatheringController {
 	
 	/**
 	 * 增加
-	 * @param gathering
+	 * @param gathering 增加的信息
 	 */
 	@RequestMapping(method=RequestMethod.POST)
 	public Result add(@RequestBody Gathering gathering  ){
@@ -86,7 +78,7 @@ public class GatheringController {
 	
 	/**
 	 * 修改
-	 * @param gathering
+	 * @param gathering 修改的信息
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.PUT)
 	public Result update(@RequestBody Gathering gathering, @PathVariable String id ){
@@ -97,7 +89,7 @@ public class GatheringController {
 	
 	/**
 	 * 删除
-	 * @param id
+	 * @param id ID
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.DELETE)
 	public Result delete(@PathVariable String id ){
