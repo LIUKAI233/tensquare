@@ -7,6 +7,7 @@ import entity.Result;
 import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,10 +16,12 @@ import org.springframework.web.bind.annotation.*;
 public class SpitController {
 
     private SpitService spitService;
+    private RedisTemplate redisTemplate;
 
     @Autowired
-    public void setSpitService(SpitService spitService){
+    public void setSpitService(SpitService spitService,RedisTemplate redisTemplate){
         this.spitService = spitService;
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -75,9 +78,31 @@ public class SpitController {
         return new Result(true,StatusCode.OK,"删除成功");
     }
 
+    /**
+     * 通过父id分页查询吐槽内容
+     * @param parentid 上级id
+     * @param page 页码
+     * @param size 页大小
+     * @return 查询结果
+     */
     @RequestMapping(value = "/comment/{parentid}/{page}/{size}",method = RequestMethod.GET)
     public Result findByParentid(@PathVariable String parentid,@PathVariable int page,@PathVariable int size){
         Page pages = spitService.findByParentid(parentid, page, size);
         return new Result(true,StatusCode.OK,"查询成功",new PageResult<Spit>(pages.getTotalElements(),pages.getContent()));
+    }
+
+    @RequestMapping(value = "/thumbup/{spitId}",method = RequestMethod.PUT)
+    public Result thumbup(@PathVariable String spitId){
+        //先定义userId，以后从缓存中获取
+        String userId = "123";
+        //先从redis缓存中查询是否点赞
+        if (redisTemplate.opsForValue().get("thumbup"+userId) != null){
+            return new Result(false,StatusCode.REPERROR,"重复点赞");
+        }
+        //执行点赞操作
+        spitService.thumbup(spitId);
+        //把该点赞操作添加经缓存信息中
+        redisTemplate.opsForValue().set("thumbup"+userId,1);
+        return new Result(true,StatusCode.OK,"点赞成功");
     }
 }

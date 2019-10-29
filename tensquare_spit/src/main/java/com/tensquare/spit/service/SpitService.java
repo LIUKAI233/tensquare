@@ -52,6 +52,12 @@ public class SpitService {
      * @param spit 吐槽信息
      */
     public void add(Spit spit){
+        //为吐槽信息附加初始值
+        spit.setVisits(0);
+        spit.setThumbup(0);
+        spit.setShare(0);
+        spit.setComment(0);
+        spit.setState("1");
         spit.setPublishtime(new Date());
         spit.set_id(idWorker.nextId()+"");
         spitDao.save(spit);
@@ -94,7 +100,7 @@ public class SpitService {
         spit.setThumbup((spit.getThumbup() !=null ? spit.getThumbup() : 1)+1);
         spitDao.save(spit);*/
 
-        //方法二  db.spit.update({_id:1},{$inc:{}})
+        //方法二  db.spit.update({_id:1},{$inc:{thumbup:NumberInt(1)}})
         Query query = new Query();
         query.addCriteria(Criteria.where("_id").is(id));
         Update update = new Update();
