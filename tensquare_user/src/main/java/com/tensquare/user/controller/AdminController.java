@@ -1,22 +1,14 @@
 package com.tensquare.user.controller;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.tensquare.user.pojo.Admin;
 import com.tensquare.user.service.AdminService;
-
 import entity.PageResult;
 import entity.Result;
 import entity.StatusCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 /**
  * 控制器层
  * @author Administrator
@@ -29,7 +21,18 @@ public class AdminController {
 
 	@Autowired
 	private AdminService adminService;
-	
+
+	/**
+	 * 登录操作
+	 */
+	@RequestMapping(value = "/login",method = RequestMethod.POST)
+	public Result login(@RequestBody Admin admin){
+		admin = adminService.login(admin.getLoginname(),admin.getPassword());
+		if (admin == null){
+			return new Result(false,StatusCode.ERROR,"登录失败");
+		}
+		return new Result(true,StatusCode.OK,"登录成功");
+	}
 	
 	/**
 	 * 查询全部数据

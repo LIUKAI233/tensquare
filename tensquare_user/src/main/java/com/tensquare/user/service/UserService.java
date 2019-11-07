@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import util.IdWorker;
 
@@ -39,6 +40,9 @@ public class UserService {
 
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
+
+	@Autowired
+	private BCryptPasswordEncoder encoder;
 
 	/**
 	 * 查询全部列表
@@ -79,7 +83,14 @@ public class UserService {
 	 * @return 查询结果
 	 */
 	public User findById(String id) {
-		return userDao.findById(id).get();
+		//先从redis中获取用户信息
+		User user = (User) redisTemplate.opsForValue().get("user" + id);
+		if (user == null) {
+			user = userDao.findById(id).get();
+			//把用户信息存入redis缓存中s
+			redisTemplate.opsForValue().set("user" + id,user);
+		}
+		return user;
 	}
 
 	/**
@@ -95,6 +106,8 @@ public class UserService {
         user.setRegdate(new Date());//注册日期
         user.setUpdatedate(new Date());//更新日期
         user.setLastdate(new Date());//最后登陆日期
+		//加密账号密码
+		user.setPassword(encoder.encode(user.getPassword()));
 		userDao.save(user);
 	}
 
@@ -103,6 +116,12 @@ public class UserService {
 	 * @param user 修改的用户信息
 	 */
 	public void update(User user) {
+		//移除缓存信息
+		redisTemplate.delete("user"+user.getId());
+		if (user.getPassword() != null){
+			//加密账号密码
+			user.setPassword(encoder.encode(user.getPassword()));
+		}
 		userDao.save(user);
 	}
 
@@ -111,6 +130,8 @@ public class UserService {
 	 * @param id ID
 	 */
 	public void deleteById(String id) {
+		//移除缓存信息
+		redisTemplate.delete("user"+id);
 		userDao.deleteById(id);
 	}
 
@@ -129,6 +150,21 @@ public class UserService {
         map.put("checkCode",checkCode);
         rabbitTemplate.convertAndSend("sms",map);
 		System.out.println("checkCode:"+checkCode);
+	}
+
+	/**
+	 * 登录操作
+	 * @param mobile 电话号码
+	 * @param password 密码
+	 * @return 查询结果
+	 */
+	public User login(String mobile, String password) {
+		//先通过电话查询用户信息
+		User byMobile = userDao.findByMobile(mobile);
+		if (mobile != null && encoder.matches(password,byMobile.getPassword())){
+			return byMobile;
+		}
+		return null;
 	}
 
 	/**
@@ -186,6 +222,5 @@ public class UserService {
 		};
 
 	}
-
 
 }

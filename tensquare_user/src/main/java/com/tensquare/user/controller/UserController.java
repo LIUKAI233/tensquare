@@ -27,6 +27,20 @@ public class UserController {
 	private RedisTemplate redisTemplate;
 
 	/**
+	 * 登录操作
+	 * @param user 登录信息
+	 * @return 登录结果
+	 */
+	@RequestMapping(value = "/login",method = RequestMethod.POST)
+	public Result login(@RequestBody User user){
+		user = userService.login(user.getMobile(), user.getPassword());
+		if (user == null){
+			return new Result(false,StatusCode.ERROR,"登录失败");
+		}
+		return new Result(true,StatusCode.OK,"登录成功");
+	}
+
+	/**
 	 * 发送验证码
 	 * @param mobile 电话号码
 	 * @return 处理结果
