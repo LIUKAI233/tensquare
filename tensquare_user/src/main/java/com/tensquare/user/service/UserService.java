@@ -12,11 +12,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import util.IdWorker;
+import util.JWTUtil;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +45,12 @@ public class UserService {
 
 	@Autowired
 	private BCryptPasswordEncoder encoder;
+
+	@Autowired
+	private HttpServletRequest request;
+
+	@Autowired
+	private JWTUtil jwtUtil;
 
 	/**
 	 * 查询全部列表
@@ -130,6 +138,11 @@ public class UserService {
 	 * @param id ID
 	 */
 	public void deleteById(String id) {
+		//验证权限
+		String tokenUser =(String) request.getAttribute("token_admin");
+		if (tokenUser == null || tokenUser.equals("")){
+			throw new RuntimeException("权限不足!");
+		}
 		//移除缓存信息
 		redisTemplate.delete("user"+id);
 		userDao.deleteById(id);
@@ -140,6 +153,9 @@ public class UserService {
 	 * @param mobile 电话号码
 	 */
 	public void sendsms(String mobile) {
+		if(userDao.findByMobile(mobile) != null){
+			throw new RuntimeException("该手机号已被注册");
+		}
 		//生成6位数验证码
 		String checkCode = RandomStringUtils.randomNumeric(6);
 		//向缓存中放一份做验证
@@ -215,9 +231,7 @@ public class UserService {
                 if (searchMap.get("personality")!=null && !"".equals(searchMap.get("personality"))) {
                 	predicateList.add(cb.like(root.get("personality").as(String.class), "%"+(String)searchMap.get("personality")+"%"));
                 }
-				
 				return cb.and( predicateList.toArray(new Predicate[predicateList.size()]));
-
 			}
 		};
 

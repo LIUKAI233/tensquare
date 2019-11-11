@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/spit")
@@ -17,11 +19,13 @@ public class SpitController {
 
     private SpitService spitService;
     private RedisTemplate redisTemplate;
+    private HttpServletRequest request;
 
     @Autowired
-    public void setSpitService(SpitService spitService,RedisTemplate redisTemplate){
+    public void setSpitService(SpitService spitService,RedisTemplate redisTemplate,HttpServletRequest request){
         this.spitService = spitService;
         this.redisTemplate = redisTemplate;
+        this.request = request;
     }
 
     /**
@@ -50,6 +54,11 @@ public class SpitController {
      */
     @RequestMapping(method = RequestMethod.POST)
     public Result add(@RequestBody Spit spit){
+        //添加吐槽信息前，先验证权限
+        String token_user =(String) request.getAttribute("token_user");
+        if (token_user == null || "".equals(token_user)){
+            return new Result(false,StatusCode.ACCESSERROR,"请先登录");
+        }
         spitService.add(spit);
         return new Result(true,StatusCode.OK,"添加成功");
     }

@@ -15,3 +15,8 @@ spring:
     host: 192.168.248.128
   rabbitmq:
     host: 192.168.248.128
+
+jwt:
+  config:
+    key: LK9527
+    ttl: 3600000

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 /**
  * 控制器层
@@ -21,6 +22,9 @@ public class ReplyController {
 
 	@Autowired
 	private ReplyService replyService;
+
+	@Autowired
+	private HttpServletRequest request;
 	
 	
 	/**
@@ -72,6 +76,11 @@ public class ReplyController {
 	 */
 	@RequestMapping(method=RequestMethod.POST)
 	public Result add(@RequestBody Reply reply  ){
+		//回答问题前，先进行权限验证
+		String tokenUser = (String) request.getAttribute("token_user");
+		if (tokenUser == null || "".equals(tokenUser)){
+			return new Result(false,StatusCode.ACCESSERROR,"请先登录");
+		}
 		replyService.add(reply);
 		return new Result(true,StatusCode.OK,"增加成功");
 	}

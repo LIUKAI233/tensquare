@@ -1,4 +1,5 @@
 package com.tensquare.user.controller;
+
 import com.tensquare.user.pojo.User;
 import com.tensquare.user.service.UserService;
 import entity.PageResult;
@@ -8,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import util.JWTUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 /**
  * 控制器层
@@ -26,6 +29,9 @@ public class UserController {
 	@Autowired
 	private RedisTemplate redisTemplate;
 
+	@Autowired
+	private JWTUtil jwtUtil;
+
 	/**
 	 * 登录操作
 	 * @param user 登录信息
@@ -37,7 +43,11 @@ public class UserController {
 		if (user == null){
 			return new Result(false,StatusCode.ERROR,"登录失败");
 		}
-		return new Result(true,StatusCode.OK,"登录成功");
+		String token = jwtUtil.createJwt(user.getId(),user.getMobile(),"user");
+		Map<String, Object> map = new HashMap<>();
+		map.put("token",token);
+		map.put("roles","user");
+		return new Result(true,StatusCode.OK,"登录成功",map);
 	}
 
 	/**
@@ -51,12 +61,18 @@ public class UserController {
 		return new Result(true,StatusCode.OK,"发送成功");
 	}
 
+	/**
+	 * 注册用户
+	 * @param code 验证码
+	 * @param user 用户信息
+	 * @return 注册结果
+	 */
 	@RequestMapping(value = "/register/{code}",method = RequestMethod.POST)
 	public Result register(@PathVariable String code,@RequestBody User user){
 		//从缓存中获取验证码
 		String checkCode = (String)redisTemplate.opsForValue().get("checkcode_" + user.getMobile());
 		if (checkCode == null || checkCode.equals("")){
-			return new Result(false,StatusCode.ERROR,"该号码未接受到手机号");
+			return new Result(false,StatusCode.ERROR,"该号码未接受到验证码");
 		}
 		if(!checkCode.equals(code)){
 			return new Result(false,StatusCode.ERROR,"请输入正确的验证码");
@@ -95,7 +111,7 @@ public class UserController {
 	@RequestMapping(value="/search/{page}/{size}",method=RequestMethod.POST)
 	public Result findSearch(@RequestBody Map searchMap , @PathVariable int page, @PathVariable int size){
 		Page<User> pageList = userService.findSearch(searchMap, page, size);
-		return  new Result(true,StatusCode.OK,"查询成功",  new PageResult<User>(pageList.getTotalElements(), pageList.getContent()) );
+		return  new Result(true,StatusCode.OK,"查询成功",  new PageResult<>(pageList.getTotalElements(), pageList.getContent()) );
 	}
 
 	/**
@@ -130,7 +146,7 @@ public class UserController {
 	}
 	
 	/**
-	 * 删除
+	 * 删除 需要验证权限
 	 * @param id 用户ID
 	 */
 	@RequestMapping(value="/{id}",method= RequestMethod.DELETE)
