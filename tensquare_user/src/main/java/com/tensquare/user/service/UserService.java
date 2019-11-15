@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import util.IdWorker;
 import util.JWTUtil;
 
@@ -237,4 +238,9 @@ public class UserService {
 
 	}
 
+	@Transactional
+	public void updatefollowcountandfanscount(String userid, String friendid, int x) {
+		userDao.updatefollowcount(x , userid);
+		userDao.updatefanscount(x , friendid);
+	}
 }
