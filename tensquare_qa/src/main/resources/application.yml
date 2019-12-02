@@ -20,3 +20,6 @@ eureka:
 feign:
   hystrix:
     enabled: true
+jwt:
+  config:
+    key: LK9527
