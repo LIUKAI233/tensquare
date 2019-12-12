@@ -1,6 +1,6 @@
 package com.tensquare.qa.controller;
 
-import com.tensquare.qa.client.BaseClient;
+import com.tensquare.qa.client.LabelClient;
 import com.tensquare.qa.pojo.Problem;
 import com.tensquare.qa.service.ProblemService;
 import entity.PageResult;
@@ -21,11 +21,11 @@ public class ProblemController {
     private ProblemService problemService;
 
     @Autowired
-    private BaseClient baseClient;
+    private LabelClient labelClient;
 
     @RequestMapping(value = "/label/{labelId}",method = RequestMethod.GET)
     public Result findLabelById(@PathVariable String labelId){
-        return baseClient.findById(labelId);
+        return labelClient.findById(labelId);
     }
 
     /**
