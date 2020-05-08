@@ -2,6 +2,7 @@ package com.tensquare.base.service;
 
 import com.tensquare.base.dao.LabelDao;
 import com.tensquare.base.pojo.Label;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public class LabelService {
     private final LabelDao labelDao;
     private final IdWorker idWorker;
 
+    @Autowired
     public LabelService(LabelDao labelDao, IdWorker idWorker) {
         this.labelDao = labelDao;
         this.idWorker = idWorker;
